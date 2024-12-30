@@ -110,11 +110,13 @@ const PlayerBehaviourProvider = ({ children }) => {
       initialStatus
     );
 
+    router.replace(`/${_.get(currentTrack, 'uuid')}`);
+
     newSound.setOnPlaybackStatusUpdate(_setOnPlaybackStatusUpdate);
     setSound(newSound);
 
     shouldPlay && setIsPlaying(true);
-  }, [sound, currentTrack, volumeByUser, setTrackProgress, setIsPlaying, getCache]);
+  }, [sound, currentTrack, volumeByUser, setTrackProgress, setIsPlaying, getCache, router]);
 
   useEffect(() => {
     Audio.setAudioModeAsync({
@@ -190,7 +192,6 @@ const PlayerBehaviourProvider = ({ children }) => {
     if (uuid && regexMD5Exp.test(uuid)) {
       // legacy
       setCurrentTrack(_.find(tracks, { id: uuid }));
-      router.replace(`/${_.get(currentTrack, 'uuid')}`);
     } else if (uuid && isValidUUID(uuid)) {
       setCurrentTrack(_.find(tracks, { uuid }));
     } else {
