@@ -18,8 +18,9 @@ const CacheProvider = ({ children }) => {
       const hardCache = await getData('sharing');
       const newCache = { ...hardCache, [key]: value };
       await storeData('sharing', newCache);
+      setCache(newCache);
     },
-    [getData, storeData]
+    [getData, storeData, setCache]
   );
 
   const updateCache = useCallback(

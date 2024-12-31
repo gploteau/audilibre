@@ -1,3 +1,4 @@
+import SplashScreen from '@/components/own/SplashScreen';
 import { PlayerBehaviourProvider } from '@/contexts/behaviour';
 import { CacheProvider } from '@/contexts/cache';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -10,18 +11,17 @@ import {
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { configureFonts, MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     Montserrat_400Regular,
@@ -31,8 +31,18 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    if (Platform.OS === 'android' && appIsReady) {
+      // LottieSplashScreen && LottieSplashScreen.hide();
+    }
+  }, [appIsReady]);
+
+  useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      const preload = async () => {
+        await fetch(process.env.EXPO_PUBLIC_TRACKS_DB_URL, { method: 'HEAD' });
+        setAppIsReady(true);
+      };
+      preload();
     }
   }, [loaded]);
 
@@ -84,8 +94,10 @@ export default function RootLayout() {
     fonts,
   };
 
-  if (!loaded) {
-    return null;
+  if (!appIsReady) {
+    if (Platform.OS !== 'web') return null;
+
+    return <SplashScreen />;
   }
 
   return (
@@ -97,7 +109,6 @@ export default function RootLayout() {
               <PlayerBehaviourProvider>
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen name="+not-found" />
-                  <Stack.Screen name="[uuid]" />
                 </Stack>
                 <StatusBar style="auto" />
               </PlayerBehaviourProvider>

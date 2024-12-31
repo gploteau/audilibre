@@ -13,7 +13,7 @@ const ControlsFooterLayoutPlayerPage = () => {
     <ViewOwn mb={32} vcenter evenly>
       <TouchableRipple
         borderless
-        style={styles.buttons}
+        style={styles({ fill }).buttons}
         onPress={() => changeTrackByWay(-1)}
         rippleColor="rgba(52, 68, 73, 0.32)"
       >
@@ -21,7 +21,7 @@ const ControlsFooterLayoutPlayerPage = () => {
       </TouchableRipple>
       <TouchableRipple
         borderless
-        style={[styles.buttons, styles.playPause]}
+        style={[styles({ fill }).buttons, styles().playPause]}
         onPress={() => setIsPlaying(!isPlaying)}
         rippleColor="rgba(52, 68, 73, 0.32)"
         disabled={!isLoaded}
@@ -34,7 +34,7 @@ const ControlsFooterLayoutPlayerPage = () => {
       </TouchableRipple>
       <TouchableRipple
         borderless
-        style={styles.buttons}
+        style={styles({ fill }).buttons}
         onPress={() => changeTrackByWay(1)}
         rippleColor="rgba(52, 68, 73, 0.32)"
       >
@@ -44,21 +44,22 @@ const ControlsFooterLayoutPlayerPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  buttons: {
-    border: 0,
-    width: 56,
-    height: 56,
-    backgroundColor: 'transparent',
-    borderRadius: 50,
-    boxShadow: '0 0 10px rgba(0,0,0,.2)',
-    padding: 12,
-  },
-  playPause: {
-    width: 74,
-    height: 74,
-    padding: 18,
-  },
-});
+const styles = ({ fill } = {}) =>
+  StyleSheet.create({
+    buttons: {
+      border: 0,
+      width: 56,
+      height: 56,
+      backgroundColor: 'transparent',
+      borderRadius: 50,
+      boxShadow: `0 0 10px ${fill}`,
+      padding: 12,
+    },
+    playPause: {
+      width: 74,
+      height: 74,
+      padding: 18,
+    },
+  });
 
 export default ControlsFooterLayoutPlayerPage;

@@ -8,7 +8,7 @@ const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-    text: '#444',
+    text: '#444444',
     background: '#f0f8ff',
     tint: tintColorLight,
     minSlider: '#2e2e2e',
@@ -19,7 +19,7 @@ export const Colors = {
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
+    background: '#222',
     tint: tintColorDark,
     minSlider: '#f0f8ff',
     maxSlider: '#2e2e2e',

@@ -12,7 +12,7 @@ import HeaderLayoutPlayerPage from './header/Header';
 
 const LayoutPlayerPage = ({ route }) => {
   const backgroundColor = useThemeColor({}, 'background');
-  const { currentTrack, setCurrentTrackById } = usePlayerBehaviourContext();
+  const { currentTrack } = usePlayerBehaviourContext();
   const insets = useSafeAreaInsets();
 
   return (

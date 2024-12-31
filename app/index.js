@@ -9,6 +9,8 @@ export default function Page() {
   const { colors } = useTheme();
   const { currentTrack } = usePlayerBehaviourContext();
 
+  console.log('index');
+
   useEffect(() => {
     currentTrack && router.replace(`/${_.get(currentTrack, 'uuid')}`);
   }, [currentTrack]);

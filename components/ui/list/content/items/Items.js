@@ -5,7 +5,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import _ from 'lodash';
 import { useCallback } from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import FooterContentListLayoutPlayerPage from '../footer/Footer';
 
@@ -18,11 +18,14 @@ const ItemsContentListLayoutPlayerPage = (props) => {
   const router = useRouter();
 
   const { filteredTracks } = useTracksListBehaviourContext();
-  const { tracks, currentTrack, setLeftDrawerOpen } = usePlayerBehaviourContext();
+  const { tracks, currentTrack, setLeftDrawerOpen, setCurrentTrackById } =
+    usePlayerBehaviourContext();
 
   const changeTrack = useCallback(
     (track) => {
-      router.navigate(`/${_.get(track, 'uuid')}`);
+      if (Platform.OS === 'web') router.navigate(`/${_.get(track, 'uuid')}`);
+      else setCurrentTrackById(_.get(track, 'uuid'));
+
       setLeftDrawerOpen(false);
     },
     [router, setLeftDrawerOpen]

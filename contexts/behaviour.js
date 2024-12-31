@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import { validate as isValidUUID } from 'uuid';
 
 Notifications.setNotificationHandler({
@@ -110,7 +111,7 @@ const PlayerBehaviourProvider = ({ children }) => {
       initialStatus
     );
 
-    router.replace(`/${_.get(currentTrack, 'uuid')}`);
+    Platform.OS === 'web' && router.navigate(`/${_.get(currentTrack, 'uuid')}`);
 
     newSound.setOnPlaybackStatusUpdate(_setOnPlaybackStatusUpdate);
     setSound(newSound);
@@ -213,8 +214,8 @@ const PlayerBehaviourProvider = ({ children }) => {
   }, [favorites, inFavorites, updateCache, currentTrack]);
 
   const setCurrentTrackById = useCallback(
-    (id) => {
-      setCurrentTrack(_.find(tracks, { id }));
+    (uuid) => {
+      setCurrentTrack(_.find(tracks, { uuid }));
     },
     [tracks]
   );
