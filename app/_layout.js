@@ -1,7 +1,11 @@
 import SplashScreen from '@/components/own/SplashScreen';
+import { DarkThemeColors } from '@/constants/theme-dark';
+import { LightThemeColors } from '@/constants/theme-light';
 import { PlayerBehaviourProvider } from '@/contexts/behaviour';
 import { CacheProvider } from '@/contexts/cache';
+import { RootProvider } from '@/contexts/root';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { getData } from '@/tools/Tools';
 import {
   Montserrat_300Light,
   Montserrat_400Regular,
@@ -12,10 +16,12 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { configureFonts, MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import LottieSplashScreen from 'react-native-lottie-splash-screen';
+import { configureFonts, PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -23,6 +29,8 @@ export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
 
   const colorScheme = useColorScheme();
+  const [currentColorScheme, setCurrentColorScheme] = useState('auto');
+
   const [loaded, error] = useFonts({
     Montserrat_400Regular,
     Montserrat_300Light,
@@ -31,15 +39,31 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (Platform.OS === 'android' && appIsReady) {
-      // LottieSplashScreen && LottieSplashScreen.hide();
+    const getScheme = async () => {
+      const data = await getData('audilibre');
+      setCurrentColorScheme(_.get(data, 'theme', 'auto'));
+    };
+    getScheme();
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' && appIsReady) {
+      setTimeout(() => {
+        LottieSplashScreen && LottieSplashScreen.hide();
+      }, 1500);
     }
   }, [appIsReady]);
 
   useEffect(() => {
     if (loaded) {
       const preload = async () => {
-        await fetch(process.env.EXPO_PUBLIC_TRACKS_DB_URL, { method: 'HEAD' });
+        // await fetch(process.env.EXPO_PUBLIC_TRACKS_DB_URL, { method: 'HEAD' });
+        const data = await getData('audilibre');
+        const url =
+          Platform.OS !== 'web' ? _.get(data, 'db_url') : process.env.EXPO_PUBLIC_TRACKS_DB_URL;
+        if (url) {
+          await fetch(url, { method: 'HEAD' });
+        }
         setAppIsReady(true);
       };
       preload();
@@ -83,39 +107,55 @@ export default function RootLayout() {
     },
   });
 
-  const defaultTheme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
+  const defaultTheme = currentColorScheme === 'dark' ? DarkThemeColors : LightThemeColors;
 
   const theme = {
     ...defaultTheme,
-    colors: {
-      ...defaultTheme.colors,
-      onSurface: '#333',
-    },
+    roundness: 6,
     fonts,
   };
 
-  if (!appIsReady) {
-    if (Platform.OS !== 'web') return null;
+  const changeColorScheme = useCallback(
+    async (scheme) => {
+      setCurrentColorScheme(scheme || 'auto');
+    },
+    [setCurrentColorScheme]
+  );
 
-    return <SplashScreen />;
+  if (!appIsReady) {
+    return Platform.OS !== 'web' ? null : <SplashScreen />;
   }
 
   return (
-    <CacheProvider>
-      <SafeAreaProvider>
-        <GestureHandlerRootView>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <PaperProvider theme={theme}>
-              <PlayerBehaviourProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-                <StatusBar style="auto" />
-              </PlayerBehaviourProvider>
-            </PaperProvider>
-          </ThemeProvider>
-        </GestureHandlerRootView>
-      </SafeAreaProvider>
-    </CacheProvider>
+    <RootProvider changeColorScheme={changeColorScheme}>
+      <CacheProvider>
+        <SafeAreaProvider>
+          <GestureHandlerRootView>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <PaperProvider theme={theme}>
+                <PlayerBehaviourProvider>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      headerStyle: {
+                        backgroundColor: defaultTheme.colors.surface,
+                      },
+                      headerTintColor: defaultTheme.colors.onSurface,
+                      headerTitleStyle: {
+                        fontWeight: 'bold',
+                        color: defaultTheme.colors.onSurface,
+                      },
+                    }}
+                  >
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <StatusBar style="auto" />
+                </PlayerBehaviourProvider>
+              </PaperProvider>
+            </ThemeProvider>
+          </GestureHandlerRootView>
+        </SafeAreaProvider>
+      </CacheProvider>
+    </RootProvider>
   );
 }

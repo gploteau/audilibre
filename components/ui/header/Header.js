@@ -1,16 +1,15 @@
 import TextOwn from '@/components/own/Text';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { durationWithPadding } from '@/tools/Tools';
 import _ from 'lodash';
 import numeral from 'numeral';
 import { useCallback } from 'react';
 import { Share } from 'react-native';
-import { IconButton, MD3Colors, Tooltip } from 'react-native-paper';
+import { IconButton, MD3Colors, Tooltip, useTheme } from 'react-native-paper';
 
 const HeaderLayoutPlayerPage = (props) => {
-  const textColor = useThemeColor({}, 'text');
+  const theme = useTheme();
   const { audioRef, isPlaying, currentTrack, inFavorites, setCurrentTrackFavorite, trackProgress } =
     usePlayerBehaviourContext();
 
@@ -63,7 +62,7 @@ const HeaderLayoutPlayerPage = (props) => {
           />
           <IconButton
             icon={'share-variant-outline'}
-            iconColor={textColor}
+            iconColor={theme.colors.onBackground}
             size={30}
             onPress={onShare}
             style={{ margin: 0 }}

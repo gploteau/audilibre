@@ -5,13 +5,13 @@ import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from 'react-native-paper';
 import CoverLayoutPlayerPage from './cover/Cover';
 import FooterLayoutPlayerPage from './footer/Footer';
 import HeaderLayoutPlayerPage from './header/Header';
 
 const LayoutPlayerPage = ({ route }) => {
-  const backgroundColor = useThemeColor({}, 'background');
+  const theme = useTheme();
   const { currentTrack } = usePlayerBehaviourContext();
   const insets = useSafeAreaInsets();
 
@@ -21,7 +21,7 @@ const LayoutPlayerPage = ({ route }) => {
       style={[
         styles.container,
         {
-          backgroundColor,
+          backgroundColor: theme.colors.background,
           paddingTop: 10,
           paddingBottom: Math.max(insets.bottom, 10),
         },

@@ -1,15 +1,18 @@
 import { SvgList } from '@/components/icons/List';
 import { SvgLoop } from '@/components/icons/Loop';
-import { SvgShuffle } from '@/components/icons/Shuffle';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { Icon, useTheme } from 'react-native-paper';
 
 const OthersFooterLayoutPlayerPage = () => {
   const navigation = useNavigation();
-  const fill = useThemeColor({}, 'text');
+  const theme = useTheme();
+
+  const fill = useMemo(() => theme.colors.onSurface, [theme]);
+
   const { isLoop, setIsLoop, isShuffle, setIsShuffle, setLeftDrawerOpen } =
     usePlayerBehaviourContext();
 
@@ -25,9 +28,12 @@ const OthersFooterLayoutPlayerPage = () => {
           <SvgLoop height={15} style={{ fill, opacity: isLoop ? 1 : 0.6 }} />
         </View>
       </Pressable>
-      <Pressable onPress={() => setIsShuffle(!isShuffle)} accessibilityRole="button">
+      <Pressable
+        onPress={() => navigation.navigate('settings', { from: 'others' })}
+        accessibilityRole="button"
+      >
         <View style={styles.buttons}>
-          <SvgShuffle height={15} style={{ fill, opacity: isShuffle ? 1 : 0.6 }} />
+          <Icon source="cog" size={26} color={fill} />
         </View>
       </Pressable>
     </ViewOwn>
@@ -37,12 +43,14 @@ const OthersFooterLayoutPlayerPage = () => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
+    marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   buttons: {
+    alignItems: 'center',
+    justifyContent: 'center',
     border: 'none',
-    padding: 12,
     width: 50,
     height: 40,
   },

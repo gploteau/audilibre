@@ -1,10 +1,10 @@
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { Drawer } from 'react-native-drawer-layout';
+import { useTheme } from 'react-native-paper';
 import ContentListLayoutPlayerPage from './content/Content';
 
 const LeftDrawerScreen = ({ children }) => {
-  const backgroundColor = useThemeColor({}, 'background');
+  const theme = useTheme();
   const { leftDrawerOpen, setLeftDrawerOpen } = usePlayerBehaviourContext();
 
   return (
@@ -14,8 +14,8 @@ const LeftDrawerScreen = ({ children }) => {
       onClose={() => setLeftDrawerOpen(false)}
       renderDrawerContent={(props) => <ContentListLayoutPlayerPage {...props} />}
       drawerStyle={{
-        backgroundColor,
         width: '100%',
+        backgroundColor: theme.colors.background,
       }}
     >
       {children}

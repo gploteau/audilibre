@@ -1,7 +1,7 @@
 import { useCacheContext } from '@/contexts/cache';
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import * as Notifications from 'expo-notifications';
-import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { useGlobalSearchParams, useNavigation, useRouter } from 'expo-router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
@@ -43,7 +43,7 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   const audioRef = useRef(null);
 
-  const { getCache, updateCache, hardUpdateCache } = useCacheContext();
+  const { cache, getCache, updateCache, hardUpdateCache } = useCacheContext();
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -51,6 +51,7 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   const params = useGlobalSearchParams();
   const router = useRouter();
+  const navigation = useNavigation();
 
   const _setOnPlaybackStatusUpdate = ({
     positionMillis,
@@ -86,11 +87,14 @@ const PlayerBehaviourProvider = ({ children }) => {
   };
 
   const loadCurrentTrack = useCallback(async () => {
-    const shouldPlay = !!sound;
+    const shouldPlay = !!sound && isPlaying;
 
     if (shouldPlay) {
       await sound.unloadAsync();
     }
+
+    setIsLoading(true);
+    setIsPlaying(false);
 
     const lastPositions = await getCache('positions', {});
 
@@ -111,10 +115,11 @@ const PlayerBehaviourProvider = ({ children }) => {
       initialStatus
     );
 
-    Platform.OS === 'web' && router.navigate(`/${_.get(currentTrack, 'uuid')}`);
+    Platform.OS === 'web' && navigation.navigate('[uuid]', { uuid: _.get(currentTrack, 'uuid') });
+
+    setSound(newSound);
 
     newSound.setOnPlaybackStatusUpdate(_setOnPlaybackStatusUpdate);
-    setSound(newSound);
 
     shouldPlay && setIsPlaying(true);
   }, [sound, currentTrack, volumeByUser, setTrackProgress, setIsPlaying, getCache, router]);
@@ -129,15 +134,23 @@ const PlayerBehaviourProvider = ({ children }) => {
       playThroughEarpieceAndroid: false,
     });
 
+    setIsLoading(false);
+
     return sound
       ? () => {
+          setIsLoaded(false);
           sound.unloadAsync();
         }
       : undefined;
   }, [sound]);
 
   useEffect(() => {
-    sound && isLoaded && sound.setStatusAsync({ shouldPlay: isPlaying });
+    const canChange = async () => {
+      const { isLoaded: isTRLoaded } = await sound.getStatusAsync();
+      isTRLoaded && sound.setStatusAsync({ shouldPlay: isPlaying });
+    };
+
+    sound && canChange();
   }, [isPlaying, isLoaded]);
 
   useEffect(() => {
@@ -161,22 +174,25 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   const loadTracks = useCallback(async () => {
     try {
-      const res = await fetch(process.env.EXPO_PUBLIC_TRACKS_DB_URL);
+      const url = Platform.OS !== 'web' ? getCache('db_url') : getCache('db_url'); // process.env.EXPO_PUBLIC_TRACKS_DB_URL;
+      if (!url) {
+        navigation.navigate('settings');
+        return;
+      }
+      const res = await fetch(url);
       const data = await res.json();
-
       setTracks(data);
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [getCache]);
 
   useEffect(() => {
     loadTracks();
-  }, []);
+  }, [_.get(cache, 'db_url')]);
 
   useEffect(() => {
     setIsLoaded(false);
-    setIsPlaying(false);
     currentTrack && loadCurrentTrack();
   }, [currentTrack]);
 
@@ -244,7 +260,6 @@ const PlayerBehaviourProvider = ({ children }) => {
   const changeTrackByWay = useCallback(
     (way = 1) => {
       const track = way === 1 ? getNextTrack() : getPreviousTrack();
-      setIsPlaying(false);
       setCurrentTrack(track);
     },
     [getNextTrack, getPreviousTrack, setCurrentTrack, setTrackProgress, setIsPlaying]
@@ -274,6 +289,7 @@ const PlayerBehaviourProvider = ({ children }) => {
     setIsShuffle,
     leftDrawerOpen,
     setLeftDrawerOpen,
+    isLoading,
   };
 
   return <PlayerContext.Provider value={behaviours}>{children}</PlayerContext.Provider>;

@@ -1,13 +1,15 @@
 import { SvgNext, SvgPause, SvgPlay, SvgPrevious } from '@/components/icons/Controls';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { TouchableRipple } from 'react-native-paper';
+import { TouchableRipple, useTheme } from 'react-native-paper';
 
 const ControlsFooterLayoutPlayerPage = () => {
-  const fill = useThemeColor({}, 'text');
+  const theme = useTheme();
   const { changeTrackByWay, isPlaying, setIsPlaying, isLoaded } = usePlayerBehaviourContext();
+
+  const fill = useMemo(() => theme.colors.onSurface, [theme]);
 
   return (
     <ViewOwn mb={32} vcenter evenly>

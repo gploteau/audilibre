@@ -6,11 +6,13 @@ import { useRouter } from 'expo-router';
 import _ from 'lodash';
 import { useCallback } from 'react';
 import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import FooterContentListLayoutPlayerPage from '../footer/Footer';
 
 const ItemsContentListLayoutPlayerPage = (props) => {
   const fill = useThemeColor({}, 'text');
+  const theme = useTheme();
 
   const { height } = useWindowDimensions();
   const { top } = useSafeAreaInsets();
@@ -47,6 +49,7 @@ const ItemsContentListLayoutPlayerPage = (props) => {
         }}
         contentContainerStyle={{
           paddingTop: 5,
+          backgroundColor: theme.colors.background,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -57,13 +60,14 @@ const ItemsContentListLayoutPlayerPage = (props) => {
             return (
               <DrawerItem
                 key={key}
-                activeTintColor={fill}
+                activeTintColor={theme.colors.onBackground}
                 focused={focused}
                 label={_.get(track, 'title')}
                 onPress={() => changeTrack(track)}
                 labelStyle={{
                   fontFamily: focused ? 'Montserrat_700Bold' : 'Montserrat_400Regular',
                   fontSize: 17,
+                  color: theme.colors.onBackground,
                 }}
               />
             );

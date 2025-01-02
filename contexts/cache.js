@@ -6,18 +6,18 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 const CacheContext = createContext(null);
 
 const CacheProvider = ({ children }) => {
-  const [cache, setCache] = useState({});
+  const [cache, setCache] = useState(null);
 
-  const loadCache = useCallback(async () => {
-    const data = await getData('sharing');
-    setCache(data);
+  const reloadCache = useCallback(async () => {
+    const data = await getData('audilibre');
+    setCache(data || {});
   }, [getData, setCache]);
 
   const hardUpdateCache = useCallback(
     async (key, value) => {
-      const hardCache = await getData('sharing');
+      const hardCache = await getData('audilibre');
       const newCache = { ...hardCache, [key]: value };
-      await storeData('sharing', newCache);
+      await storeData('audilibre', newCache);
       setCache(newCache);
     },
     [getData, storeData, setCache]
@@ -27,27 +27,31 @@ const CacheProvider = ({ children }) => {
     (key, value) => {
       const newCache = { ...cache, [key]: value };
       setCache(newCache);
-      storeData('sharing', newCache);
+      storeData('audilibre', newCache);
     },
     [cache, storeData, setCache]
   );
 
   const getCache = useCallback(
     (key, defaultValue) => {
-      return _.get(cache, key, defaultValue);
+      return _.get(cache, key, defaultValue || null);
     },
     [cache]
   );
 
   useEffect(() => {
-    loadCache();
+    reloadCache();
   }, []);
 
   const value = {
+    cache,
+    reloadCache,
     getCache,
     updateCache,
     hardUpdateCache,
   };
+
+  if (cache === null) return null;
 
   return <CacheContext.Provider value={value}>{children}</CacheContext.Provider>;
 };

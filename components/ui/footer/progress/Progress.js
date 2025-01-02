@@ -1,3 +1,4 @@
+import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { durationWithPadding } from '@/tools/Tools';
@@ -6,9 +7,12 @@ import numeral from 'numeral';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Slider } from 'react-native-awesome-slider';
+import { TouchableRipple, useTheme } from 'react-native-paper';
 import { useSharedValue } from 'react-native-reanimated';
 
 const ProgressFooterLayoutPlayerPage = () => {
+  const theme = useTheme();
+
   const minSliderTint = useThemeColor({}, 'minSlider');
   const maxSliderTint = useThemeColor({}, 'maxSlider');
 
@@ -45,11 +49,12 @@ const ProgressFooterLayoutPlayerPage = () => {
       <Slider
         theme={{
           disableMinTrackTintColor: '#fff',
-          maximumTrackTintColor: maxSliderTint,
-          minimumTrackTintColor: minSliderTint,
-          bubbleBackgroundColor: maxSliderTint,
+          maximumTrackTintColor: theme.colors.elevation.level1,
+          minimumTrackTintColor: theme.colors.onBackground,
+          bubbleBackgroundColor: theme.colors.backdrop,
+          thumbBackgroundColor: '#fff',
           cacheTrackTintColor: '#555',
-          heartbeatColor: '#777',
+          heartbeatColor: theme.colors.elevation.level3,
         }}
         heartbeat={isPlaying}
         progress={progress}
@@ -65,6 +70,23 @@ const ProgressFooterLayoutPlayerPage = () => {
         bubbleTextStyle={styles.bubble}
         onSlidingComplete={(value) => {
           setTrackProgressByUser(value);
+        }}
+        renderThumb={() => {
+          return (
+            <TouchableRipple
+              borderless
+              style={[
+                styles.thumb,
+                {
+                  borderColor: theme.colors.onBackground,
+                  backgroundColor: theme.colors.onBackground,
+                },
+              ]}
+              rippleColor="#333"
+            >
+              <ViewOwn></ViewOwn>
+            </TouchableRipple>
+          );
         }}
       />
     </View>
@@ -87,6 +109,12 @@ const styles = StyleSheet.create({
   },
   bubble: {
     fontFamily: 'Montserrat_400Regular',
+  },
+  thumb: {
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    borderWidth: 3,
   },
 });
 

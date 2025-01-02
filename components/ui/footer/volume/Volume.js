@@ -2,18 +2,18 @@ import { SvgSpeakerOff, SvgSpeakerOn } from '@/components/icons/Speaker';
 import TextOwn from '@/components/own/Text';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import numeral from 'numeral';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Slider } from 'react-native-awesome-slider';
-import { TouchableRipple } from 'react-native-paper';
+import { TouchableRipple, useTheme } from 'react-native-paper';
 import { useSharedValue } from 'react-native-reanimated';
 
 const VolumeFooterLayoutPlayerPage = () => {
-  const fill = useThemeColor({}, 'text');
-  const minSliderTint = useThemeColor({}, 'minSlider');
-  const maxSliderTint = useThemeColor({}, 'maxSlider');
+  const theme = useTheme();
+
+  const fill = useMemo(() => theme.colors.onSurface, [theme]);
+
   const { setVolumeByUser, volume, volumeByUser } = usePlayerBehaviourContext();
   const [thumbPressed, setThumbPressed] = useState(false);
 
@@ -38,8 +38,8 @@ const VolumeFooterLayoutPlayerPage = () => {
         <Slider
           theme={{
             disableMinTrackTintColor: '#666',
-            maximumTrackTintColor: maxSliderTint,
-            minimumTrackTintColor: minSliderTint,
+            maximumTrackTintColor: theme.colors.elevation.level1,
+            minimumTrackTintColor: theme.colors.onBackground,
           }}
           progress={progress}
           minimumValue={min}
@@ -55,7 +55,13 @@ const VolumeFooterLayoutPlayerPage = () => {
             return (
               <TouchableRipple
                 borderless
-                style={[styles.thumb, { borderColor: fill }]}
+                style={[
+                  styles.thumb,
+                  {
+                    borderColor: theme.colors.onBackground,
+                    backgroundColor: theme.colors.onBackground,
+                  },
+                ]}
                 rippleColor="#333"
               >
                 <ViewOwn></ViewOwn>
@@ -90,9 +96,7 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 50,
-    borderColor: '#333',
     borderWidth: 3,
-    backgroundColor: 'rgb(240, 248, 255)',
   },
 });
 

@@ -4,10 +4,11 @@ import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useTracksListBehaviourContext } from '@/contexts/tracks-list';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { IconButton, MD3Colors } from 'react-native-paper';
+import { IconButton, MD3Colors, useTheme } from 'react-native-paper';
 import SearchFooterContentListLayoutPlayerPage from './search/Search';
 
 const FooterContentListLayoutPlayerPage = (props) => {
+  const theme = useTheme();
   const backgroundColor = useThemeColor({}, 'background');
   const fill = useThemeColor({}, 'text');
   const { onlyFavorites, setOnlyFavorites } = useTracksListBehaviourContext();
@@ -19,7 +20,7 @@ const FooterContentListLayoutPlayerPage = (props) => {
       <ViewOwn style={styles.view}>
         <Pressable onPress={() => setLeftDrawerOpen(false)} accessibilityRole="button">
           <View style={styles.buttons}>
-            <SvgBack height={16} style={{ fill }} />
+            <SvgBack height={16} style={{ fill: theme.colors.onBackground }} />
           </View>
         </Pressable>
         <IconButton

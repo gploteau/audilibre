@@ -1,6 +1,6 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
 import PropTypes from 'prop-types';
 import { StyleSheet, View } from 'react-native';
+import { Surface } from 'react-native-paper';
 
 const ViewOwn = ({
   children,
@@ -18,10 +18,9 @@ const ViewOwn = ({
   lightColor,
   darkColor,
   fullHeight,
+  surface,
   ...rest
 }) => {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-
   const margin = {
     marginBottom: m || mb || 0,
     marginTop: m || mt || 0,
@@ -35,19 +34,20 @@ const ViewOwn = ({
     (center && 'center') ||
     'flex-start';
 
+  const Component = surface ? Surface : View;
+
   return (
-    <View
+    <Component
       style={[
         styles({ column, justifyContent, vcenter }).container,
         margin,
-        { backgroundColor },
         fullHeight && { flex: 1 },
         style,
       ]}
       {...rest}
     >
       {children}
-    </View>
+    </Component>
   );
 };
 
