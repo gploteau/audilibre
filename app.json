@@ -35,8 +35,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-audio"
+      "expo-audio",
+      "./plugins/withGradleProperties"
     ],
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFFFFF"
+    },
     "extra": {
       "router": {
         "origin": false

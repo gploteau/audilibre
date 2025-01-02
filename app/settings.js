@@ -30,7 +30,11 @@ const SettingsPage = ({ route }) => {
 
   useEffect(() => {
     if (from !== 'others') {
-      navigation.setOptions({ headerLeft: null });
+      navigation.setOptions({
+        headerLeft: null,
+        headerBackButtonMenuEnabled: false,
+        headerBackVisible: false,
+      });
     }
   }, [navigation, from]);
 
