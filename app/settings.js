@@ -13,13 +13,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, HelperText, Icon, RadioButton, TextInput, useTheme } from 'react-native-paper';
 
 const SettingsPage = ({ route }) => {
-  const { from } = useLocalSearchParams();
+  const { from, db_url } = useLocalSearchParams();
   const navigation = useNavigation();
   const { currentTrack } = usePlayerBehaviourContext();
   const insets = useSafeAreaInsets();
 
   const [hasErrors, setHasErrors] = useState('');
-  const [url, setUrl] = useState(null);
+  const [url, setUrl] = useState(db_url);
   const [loading, setLoading] = useState(false);
 
   const { getCache, cache, hardUpdateCache } = useCacheContext();
@@ -30,7 +30,7 @@ const SettingsPage = ({ route }) => {
 
   useEffect(() => {
     if (!from) {
-      navigation.setOptions({ headerBackVisible: true });
+      navigation.setOptions({ headerBackVisible: false });
     }
   }, [navigation, from]);
 

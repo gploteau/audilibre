@@ -1,6 +1,7 @@
 import TextOwn from '@/components/own/Text';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
+import { useCacheContext } from '@/contexts/cache';
 import { durationWithPadding } from '@/tools/Tools';
 import _ from 'lodash';
 import numeral from 'numeral';
@@ -12,6 +13,7 @@ const HeaderLayoutPlayerPage = (props) => {
   const theme = useTheme();
   const { audioRef, isPlaying, currentTrack, inFavorites, setCurrentTrackFavorite, trackProgress } =
     usePlayerBehaviourContext();
+  const { getCache } = useCacheContext();
 
   const onShare = useCallback(async () => {
     try {
@@ -20,8 +22,13 @@ const HeaderLayoutPlayerPage = (props) => {
         message: `Voici un titre qui pourrait t'intéresser : ${_.get(
           currentTrack,
           'title'
-        )}\nhttps://sharing.vendorbox.fr/${_.get(currentTrack, 'uuid')}`,
-        url: `https://sharing.vendorbox.fr/${_.get(currentTrack, 'uuid')}`,
+        )}\nhttps://sharing.vendorbox.fr/${_.get(currentTrack, 'uuid')}?db_url=${encodeURIComponent(
+          getCache('db_url')
+        )}`,
+        url: `https://sharing.vendorbox.fr/${_.get(
+          currentTrack,
+          'uuid'
+        )}?db_url=${encodeURIComponent(getCache('db_url'))}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
