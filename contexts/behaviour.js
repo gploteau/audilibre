@@ -179,7 +179,7 @@ const PlayerBehaviourProvider = ({ children }) => {
     try {
       const url = getCache('db_url');
       if (!url) {
-        navigation.navigate('settings', { db_url: _.get(params, 'db_url') });
+        navigation.navigate('settings', { db_url: _.get(params, 'db_url', '') });
         return;
       }
       const res = await fetch(url);

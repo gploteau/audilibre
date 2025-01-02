@@ -84,7 +84,7 @@ const SettingsPage = ({ route }) => {
   }, [cache]);
 
   const currentUrl = useMemo(() => {
-    return getCache('db_url');
+    return getCache('db_url', '');
   }, [cache]);
 
   const handleChangeThemeLight = useCallback(
