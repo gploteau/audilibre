@@ -19,7 +19,7 @@ const SettingsPage = ({ route }) => {
   const insets = useSafeAreaInsets();
 
   const [hasErrors, setHasErrors] = useState('');
-  const [url, setUrl] = useState(db_url);
+  const [url, setUrl] = useState(db_url || '');
   const [loading, setLoading] = useState(false);
 
   const { getCache, cache, hardUpdateCache } = useCacheContext();
