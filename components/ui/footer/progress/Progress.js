@@ -1,6 +1,5 @@
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { durationWithPadding } from '@/tools/Tools';
 import _ from 'lodash';
 import numeral from 'numeral';
@@ -12,9 +11,6 @@ import { useSharedValue } from 'react-native-reanimated';
 
 const ProgressFooterLayoutPlayerPage = () => {
   const theme = useTheme();
-
-  const minSliderTint = useThemeColor({}, 'minSlider');
-  const maxSliderTint = useThemeColor({}, 'maxSlider');
 
   const {
     currentTrack,
@@ -48,12 +44,10 @@ const ProgressFooterLayoutPlayerPage = () => {
     <View style={styles.container}>
       <Slider
         theme={{
-          disableMinTrackTintColor: '#fff',
-          maximumTrackTintColor: theme.colors.elevation.level1,
+          maximumTrackTintColor: theme.colors.elevation.level5,
           minimumTrackTintColor: theme.colors.onBackground,
           bubbleBackgroundColor: theme.colors.backdrop,
-          thumbBackgroundColor: '#fff',
-          cacheTrackTintColor: '#555',
+          cacheTrackTintColor: theme.colors.elevation.level1,
           heartbeatColor: theme.colors.elevation.level3,
         }}
         heartbeat={isPlaying}
@@ -82,7 +76,7 @@ const ProgressFooterLayoutPlayerPage = () => {
                   backgroundColor: theme.colors.onBackground,
                 },
               ]}
-              rippleColor="#333"
+              rippleColor={theme.colors.backdrop}
             >
               <ViewOwn></ViewOwn>
             </TouchableRipple>

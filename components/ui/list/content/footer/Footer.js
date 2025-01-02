@@ -2,15 +2,12 @@ import SvgBack from '@/components/icons/Back';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useTracksListBehaviourContext } from '@/contexts/tracks-list';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { IconButton, MD3Colors, useTheme } from 'react-native-paper';
 import SearchFooterContentListLayoutPlayerPage from './search/Search';
 
 const FooterContentListLayoutPlayerPage = (props) => {
   const theme = useTheme();
-  const backgroundColor = useThemeColor({}, 'background');
-  const fill = useThemeColor({}, 'text');
   const { onlyFavorites, setOnlyFavorites } = useTracksListBehaviourContext();
   const { setLeftDrawerOpen } = usePlayerBehaviourContext();
 

@@ -13,19 +13,18 @@ const OthersFooterLayoutPlayerPage = () => {
 
   const fill = useMemo(() => theme.colors.onSurface, [theme]);
 
-  const { isLoop, setIsLoop, isShuffle, setIsShuffle, setLeftDrawerOpen } =
-    usePlayerBehaviourContext();
+  const { isLoop, setIsLoop, setLeftDrawerOpen } = usePlayerBehaviourContext();
 
   return (
     <ViewOwn style={styles.container}>
       <Pressable onPress={() => setLeftDrawerOpen(true)} accessibilityRole="button">
         <View style={styles.buttons}>
-          <SvgList height={15} style={{ fill, opacity: 1 }} />
+          <SvgList height={26} width={26} style={{ fill, opacity: 1 }} />
         </View>
       </Pressable>
       <Pressable onPress={() => setIsLoop(!isLoop)} accessibilityRole="button">
         <View style={styles.buttons}>
-          <SvgLoop height={15} style={{ fill, opacity: isLoop ? 1 : 0.6 }} />
+          <SvgLoop height={26} width={26} style={{ fill, opacity: isLoop ? 1 : 0.6 }} />
         </View>
       </Pressable>
       <Pressable

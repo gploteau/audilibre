@@ -1,13 +1,13 @@
 import ViewOwn from '@/components/own/View';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import TextOwn from '@/components/own/Text';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useCacheContext } from '@/contexts/cache';
 import { useRootContext } from '@/contexts/root';
 import { storeData } from '@/tools/Tools';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, HelperText, Icon, RadioButton, TextInput, useTheme } from 'react-native-paper';
@@ -19,7 +19,7 @@ const SettingsPage = ({ route }) => {
   const insets = useSafeAreaInsets();
 
   const [hasErrors, setHasErrors] = useState('');
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const { getCache, cache, hardUpdateCache } = useCacheContext();
@@ -29,8 +29,9 @@ const SettingsPage = ({ route }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    if (!from) return;
-    navigation.setOptions({ headerShown: true, title: 'Settings' });
+    if (from) {
+      navigation.setOptions({ headerBackVisible: true });
+    }
   }, [navigation, from]);
 
   const saveParams = useCallback(async () => {
@@ -82,6 +83,10 @@ const SettingsPage = ({ route }) => {
     return getCache('theme');
   }, [cache]);
 
+  const currentUrl = useMemo(() => {
+    return getCache('db_url');
+  }, [cache]);
+
   const handleChangeThemeLight = useCallback(
     (value) => {
       hardUpdateCache('theme', value);
@@ -91,14 +96,13 @@ const SettingsPage = ({ route }) => {
   );
 
   return (
-    <SafeAreaView
-      emulateUnlessSupported={true}
+    <View
       style={[
         styles.container,
         {
           backgroundColor: theme.colors.background,
-          paddingTop: 10,
           paddingBottom: Math.max(insets.bottom, 10),
+          paddingTop: 10,
         },
       ]}
     >
@@ -116,33 +120,32 @@ const SettingsPage = ({ route }) => {
             onValueChange={handleChangeThemeLight}
             value={currentThemeLight || 'auto'}
           >
-            <RadioButton.Item
-              value="auto"
-              label={
-                <ViewOwn vcenter style={{ backgroundColor: 'transparent' }}>
-                  <Icon size={26} source="contrast-circle" />
-                  <TextOwn style={{ marginLeft: 10 }}>Automatic</TextOwn>
-                </ViewOwn>
-              }
-            />
-            <RadioButton.Item
-              value="light"
-              label={
-                <ViewOwn vcenter style={{ backgroundColor: 'transparent' }}>
-                  <Icon size={26} source="weather-sunny" />
-                  <TextOwn style={{ marginLeft: 10 }}>Light</TextOwn>
-                </ViewOwn>
-              }
-            />
-            <RadioButton.Item
-              value="dark"
-              label={
-                <ViewOwn vcenter style={{ backgroundColor: 'transparent' }}>
-                  <Icon size={26} source="moon-waning-crescent" />
-                  <TextOwn style={{ marginLeft: 10 }}>Dark</TextOwn>
-                </ViewOwn>
-              }
-            />
+            <View style={{ position: 'relative' }}>
+              <View style={{ position: 'absolute', top: 12, left: 10 }}>
+                <Icon size={26} source="contrast-circle" />
+              </View>
+              <RadioButton.Item value="auto" label="Automatic" labelStyle={{ paddingLeft: 30 }} />
+            </View>
+            <View style={{ position: 'relative' }}>
+              <View style={{ position: 'absolute', top: 12, left: 10 }}>
+                <Icon
+                  size={26}
+                  source="weather-sunny"
+                  style={{ position: 'absolute', top: 12, left: 10 }}
+                />
+              </View>
+              <RadioButton.Item value="light" label="Light" labelStyle={{ paddingLeft: 30 }} />
+            </View>
+            <View style={{ position: 'relative' }}>
+              <View style={{ position: 'absolute', top: 12, left: 10 }}>
+                <Icon
+                  size={26}
+                  source="moon-waning-crescent"
+                  style={{ position: 'absolute', top: 12, left: 10 }}
+                />
+              </View>
+              <RadioButton.Item value="dark" label="Dark" labelStyle={{ paddingLeft: 30 }} />
+            </View>
           </RadioButton.Group>
         </ViewOwn>
         <ViewOwn
@@ -156,7 +159,7 @@ const SettingsPage = ({ route }) => {
             <TextInput
               mode="outlined"
               label="Database url"
-              value={url}
+              value={url ?? currentUrl ?? ''}
               onChangeText={(text) => setUrl(text)}
               style={{ width: '100%' }}
             />
@@ -177,7 +180,8 @@ const SettingsPage = ({ route }) => {
           </ViewOwn>
         </ViewOwn>
       </ViewOwn>
-    </SafeAreaView>
+      <StatusBar style="auto" />
+    </View>
   );
 };
 

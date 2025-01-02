@@ -1,6 +1,5 @@
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useTracksListBehaviourContext } from '@/contexts/tracks-list';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import _ from 'lodash';
@@ -11,7 +10,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import FooterContentListLayoutPlayerPage from '../footer/Footer';
 
 const ItemsContentListLayoutPlayerPage = (props) => {
-  const fill = useThemeColor({}, 'text');
   const theme = useTheme();
 
   const { height } = useWindowDimensions();

@@ -3,10 +3,10 @@ import TextOwn from '@/components/own/Text';
 import ViewOwn from '@/components/own/View';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import numeral from 'numeral';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Slider } from 'react-native-awesome-slider';
-import { TouchableRipple, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 import { useSharedValue } from 'react-native-reanimated';
 
 const VolumeFooterLayoutPlayerPage = () => {
@@ -14,20 +14,25 @@ const VolumeFooterLayoutPlayerPage = () => {
 
   const fill = useMemo(() => theme.colors.onSurface, [theme]);
 
-  const { setVolumeByUser, volume, volumeByUser } = usePlayerBehaviourContext();
+  const { setVolumeByUser, setVolume, volume, volumeByUser } = usePlayerBehaviourContext();
   const [thumbPressed, setThumbPressed] = useState(false);
 
-  const progress = useSharedValue(1);
+  const progress = useSharedValue(volume);
   const min = useSharedValue(0);
   const max = useSharedValue(1);
 
   useEffect(() => {
-    progress.value = volumeByUser;
-  }, [volumeByUser]);
+    progress.value = volume;
+  }, [volume]);
+
+  const mute = useCallback(() => {
+    setVolumeByUser(0);
+    setVolume(0);
+  }, [setVolumeByUser, setVolume]);
 
   return (
     <ViewOwn>
-      <Pressable style={styles.button} onPress={() => setVolumeByUser(0)}>
+      <Pressable style={styles.button} onPress={mute}>
         {volumeByUser === 0 ? (
           <SvgSpeakerOff height={25} style={{ fill }} />
         ) : (
@@ -37,8 +42,7 @@ const VolumeFooterLayoutPlayerPage = () => {
       <View style={{ flex: 1, paddingLeft: 15, paddingRight: 20 }}>
         <Slider
           theme={{
-            disableMinTrackTintColor: '#666',
-            maximumTrackTintColor: theme.colors.elevation.level1,
+            maximumTrackTintColor: theme.colors.elevation.level5,
             minimumTrackTintColor: theme.colors.onBackground,
           }}
           progress={progress}
@@ -50,10 +54,11 @@ const VolumeFooterLayoutPlayerPage = () => {
           style={styles.slider}
           containerStyle={styles.barSlider}
           onValueChange={(value) => setVolumeByUser(value)}
+          onSlidingComplete={(value) => setVolume(value)}
           renderBubble={() => {}}
           renderThumb={() => {
             return (
-              <TouchableRipple
+              <Pressable
                 borderless
                 style={[
                   styles.thumb,
@@ -62,13 +67,11 @@ const VolumeFooterLayoutPlayerPage = () => {
                     backgroundColor: theme.colors.onBackground,
                   },
                 ]}
-                rippleColor="#333"
               >
                 <ViewOwn></ViewOwn>
-              </TouchableRipple>
+              </Pressable>
             );
           }}
-          renderMark={({ index }) => {}}
         />
       </View>
       <ViewOwn center mr={10} vcenter style={{ width: 30 }}>

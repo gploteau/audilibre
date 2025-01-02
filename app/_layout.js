@@ -59,8 +59,7 @@ export default function RootLayout() {
       const preload = async () => {
         // await fetch(process.env.EXPO_PUBLIC_TRACKS_DB_URL, { method: 'HEAD' });
         const data = await getData('audilibre');
-        const url =
-          Platform.OS !== 'web' ? _.get(data, 'db_url') : process.env.EXPO_PUBLIC_TRACKS_DB_URL;
+        const url = _.get(data, 'db_url');
         if (url) {
           await fetch(url, { method: 'HEAD' });
         }
@@ -148,6 +147,24 @@ export default function RootLayout() {
                     }}
                   >
                     <Stack.Screen name="+not-found" />
+
+                    <Stack.Screen
+                      name="settings"
+                      options={{
+                        title: 'Settings',
+                        headerBackVisible: true,
+                        headerShown: true,
+                        animation: 'slide_from_bottom',
+                        presentation: 'modal',
+                      }}
+                    />
+                    <Stack.Screen
+                      name="[uuid]"
+                      options={{
+                        animationEnabled: false,
+                        headerShown: false,
+                      }}
+                    />
                   </Stack>
                   <StatusBar style="auto" />
                 </PlayerBehaviourProvider>

@@ -13,7 +13,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
 import { validate as isValidUUID } from 'uuid';
 
 Notifications.setNotificationHandler({
@@ -31,12 +30,11 @@ const PlayerBehaviourProvider = ({ children }) => {
   const [trackProgress, setTrackProgress] = useState(0);
   const [trackProgressByUser, setTrackProgressByUser] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(0.5);
   const [volumeByUser, setVolumeByUser] = useState(0.5);
   const [tracks, setTracks] = useState([]);
   const [sound, setSound] = useState();
   const [isLoop, setIsLoop] = useState(false);
-  const [isShuffle, setIsShuffle] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -115,7 +113,7 @@ const PlayerBehaviourProvider = ({ children }) => {
       initialStatus
     );
 
-    Platform.OS === 'web' && navigation.navigate('[uuid]', { uuid: _.get(currentTrack, 'uuid') });
+    navigation.navigate('[uuid]', { uuid: _.get(currentTrack, 'uuid') });
 
     setSound(newSound);
 
@@ -134,7 +132,12 @@ const PlayerBehaviourProvider = ({ children }) => {
       playThroughEarpieceAndroid: false,
     });
 
-    setIsLoading(false);
+    const update = async () => {
+      const { isLoaded: isStatusLoaded } = await sound.getStatusAsync();
+      setIsLoading(!isStatusLoaded);
+    };
+
+    sound && update();
 
     return sound
       ? () => {
@@ -146,8 +149,8 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   useEffect(() => {
     const canChange = async () => {
-      const { isLoaded: isTRLoaded } = await sound.getStatusAsync();
-      isTRLoaded && sound.setStatusAsync({ shouldPlay: isPlaying });
+      const { isLoaded: isStatusLoaded } = await sound.getStatusAsync();
+      isStatusLoaded && sound.setStatusAsync({ shouldPlay: isPlaying });
     };
 
     sound && canChange();
@@ -174,7 +177,7 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   const loadTracks = useCallback(async () => {
     try {
-      const url = Platform.OS !== 'web' ? getCache('db_url') : getCache('db_url'); // process.env.EXPO_PUBLIC_TRACKS_DB_URL;
+      const url = getCache('db_url');
       if (!url) {
         navigation.navigate('settings');
         return;
@@ -196,14 +199,16 @@ const PlayerBehaviourProvider = ({ children }) => {
     currentTrack && loadCurrentTrack();
   }, [currentTrack]);
 
-  useEffect(() => {
-    const update = async () => {
-      if (!currentTrack) {
-        const id = await getCache('lastId', null);
-        setCurrentTrack(id ? _.find(tracks, { id }) : _.head(tracks));
-      }
-    };
+  const selectTrack = useCallback(async () => {
+    if (!currentTrack) {
+      console.log(currentTrack);
 
+      const id = await getCache('lastId', null);
+      setCurrentTrack(id ? _.find(tracks, { id }) : _.head(tracks));
+    }
+  }, [currentTrack, tracks, cache, getCache]);
+
+  useEffect(() => {
     const regexMD5Exp = /^[a-f0-9]{32}$/gi;
     const uuid = _.get(params, 'uuid');
     if (uuid && regexMD5Exp.test(uuid)) {
@@ -212,7 +217,7 @@ const PlayerBehaviourProvider = ({ children }) => {
     } else if (uuid && isValidUUID(uuid)) {
       setCurrentTrack(_.find(tracks, { uuid }));
     } else {
-      update();
+      selectTrack();
     }
   }, [tracks, _.get(params, 'uuid')]);
 
@@ -243,19 +248,11 @@ const PlayerBehaviourProvider = ({ children }) => {
   }, [currentTrack, tracks]);
 
   const getNextTrack = useCallback(() => {
-    if (isShuffle) {
-      return _.chain(tracks)
-        .reject({ id: _.get(currentTrack, 'id') })
-        .shuffle()
-        .head()
-        .value();
-    }
-
     const next = _.findIndex(tracks, { id: _.get(currentTrack, 'id') }) + 1;
     if (next >= _.size(tracks)) return _.head(tracks);
 
     return _.nth(tracks, next);
-  }, [currentTrack, tracks, isShuffle]);
+  }, [currentTrack, tracks]);
 
   const changeTrackByWay = useCallback(
     (way = 1) => {
@@ -280,13 +277,12 @@ const PlayerBehaviourProvider = ({ children }) => {
     setTrackProgressByUser,
     setVolumeByUser,
     volumeByUser,
+    setVolume,
     volume,
     trackCache,
     isLoaded,
     isLoop,
     setIsLoop,
-    isShuffle,
-    setIsShuffle,
     leftDrawerOpen,
     setLeftDrawerOpen,
     isLoading,

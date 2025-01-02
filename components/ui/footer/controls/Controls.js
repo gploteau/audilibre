@@ -17,7 +17,7 @@ const ControlsFooterLayoutPlayerPage = () => {
         borderless
         style={styles({ fill }).buttons}
         onPress={() => changeTrackByWay(-1)}
-        rippleColor="rgba(52, 68, 73, 0.32)"
+        rippleColor={theme.colors.backdrop}
       >
         <SvgPrevious height={34} style={{ fill }} />
       </TouchableRipple>
@@ -25,7 +25,7 @@ const ControlsFooterLayoutPlayerPage = () => {
         borderless
         style={[styles({ fill }).buttons, styles().playPause]}
         onPress={() => setIsPlaying(!isPlaying)}
-        rippleColor="rgba(52, 68, 73, 0.32)"
+        rippleColor={theme.colors.backdrop}
         disabled={!isLoaded}
       >
         {isPlaying ? (
@@ -38,7 +38,7 @@ const ControlsFooterLayoutPlayerPage = () => {
         borderless
         style={styles({ fill }).buttons}
         onPress={() => changeTrackByWay(1)}
-        rippleColor="rgba(52, 68, 73, 0.32)"
+        rippleColor={theme.colors.backdrop}
       >
         <SvgNext height={34} style={{ fill }} />
       </TouchableRipple>
@@ -54,7 +54,7 @@ const styles = ({ fill } = {}) =>
       height: 56,
       backgroundColor: 'transparent',
       borderRadius: 50,
-      boxShadow: `0 0 10px ${fill}`,
+      boxShadow: `0 0 6px ${fill}`,
       padding: 12,
     },
     playPause: {
