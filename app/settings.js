@@ -29,8 +29,8 @@ const SettingsPage = ({ route }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    if (!from) {
-      navigation.setOptions({ headerBackVisible: false });
+    if (from !== 'others') {
+      navigation.setOptions({ headerLeft: null });
     }
   }, [navigation, from]);
 
