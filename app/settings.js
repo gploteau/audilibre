@@ -29,7 +29,7 @@ const SettingsPage = ({ route }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    if (from) {
+    if (!from) {
       navigation.setOptions({ headerBackVisible: true });
     }
   }, [navigation, from]);

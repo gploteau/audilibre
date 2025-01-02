@@ -201,8 +201,6 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   const selectTrack = useCallback(async () => {
     if (!currentTrack) {
-      console.log(currentTrack);
-
       const id = await getCache('lastId', null);
       setCurrentTrack(id ? _.find(tracks, { id }) : _.head(tracks));
     }
