@@ -5,11 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useCacheContext } from '@/contexts/cache';
 import { useRootContext } from '@/contexts/root';
+import { useYupValidationResolver } from '@/tools/Tools';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, Form, useForm } from 'react-hook-form';
 import { Button, HelperText, Icon, RadioButton, TextInput, useTheme } from 'react-native-paper';
+import * as yup from 'yup';
 
 const SettingsPage = ({ route }) => {
   const { from, db_url } = useLocalSearchParams();
@@ -27,18 +29,26 @@ const SettingsPage = ({ route }) => {
 
   const theme = useTheme();
 
+  const validationSchema = yup.object({
+    db_url: yup.string().required('Required'),
+  });
+
+  const resolver = useYupValidationResolver(validationSchema);
+
   const {
     control,
-    handleSubmit,
-    getValues,
-    formState: { errors, isDirty, isValid },
+    setError,
+    formState: { errors, isDirty, isValid, dirtyFields, validatingFields },
   } = useForm({
+    resolver,
     defaultValues: async () => {
       return {
         db_url: await hardGetCache('db_url', ''),
       };
     },
   });
+
+  console.log(dirtyFields, errors, isValid, isDirty);
 
   useEffect(() => {
     if (from !== 'others') {
@@ -50,47 +60,50 @@ const SettingsPage = ({ route }) => {
     }
   }, [navigation, from]);
 
-  const saveParams = useCallback(async () => {
-    const { db_url } = getValues();
-    if (db_url) {
-      try {
-        setHasErrors('');
-        setLoading(true);
-        const dist = db_url.startsWith('http') ? db_url : `https://${db_url}`;
-        const res = await fetch(dist);
-        const data = await res.json();
-        if (_.isArray(data)) {
-          const diff = _.chain(data)
-            .map((value) =>
-              _.isEmpty(
-                _.difference(_.keys(value), [
-                  'id',
-                  'uuid',
-                  'duration',
-                  'file',
-                  'title',
-                  'author',
-                  'cover',
-                ])
+  const onSubmit = useCallback(
+    async ({ data }) => {
+      const { db_url } = data;
+      if (db_url) {
+        try {
+          setHasErrors('');
+          setLoading(true);
+          const dist = db_url.startsWith('http') ? db_url : `https://${db_url}`;
+          const res = await fetch(dist);
+          const data = await res.json();
+          if (_.isArray(data)) {
+            const diff = _.chain(data)
+              .map((value) =>
+                _.isEmpty(
+                  _.difference(_.keys(value), [
+                    'id',
+                    'uuid',
+                    'duration',
+                    'file',
+                    'title',
+                    'author',
+                    'cover',
+                  ])
+                )
               )
-            )
-            .value();
-          if (_.size(diff) === _.size(data)) {
-            await hardUpdateCache('db_url', dist);
-            navigation.navigate('index');
-            return;
+              .value();
+            if (_.size(diff) === _.size(data)) {
+              await hardUpdateCache('db_url', dist);
+              navigation.navigate('index');
+              return;
+            }
           }
-        }
 
-        setHasErrors('This file is unvalid');
-      } catch (e) {
-        setHasErrors(e.message);
-        console.error(e);
-      } finally {
-        setLoading(false);
+          setError('db_url', { type: 'custom', message: 'This file is unvalid' });
+        } catch (e) {
+          setError('db_url', { type: 'custom', message: e.message });
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
       }
-    }
-  }, [getValues, hardUpdateCache]);
+    },
+    [hardUpdateCache]
+  );
 
   const currentThemeLight = useMemo(() => {
     return getCache('theme');
@@ -164,38 +177,49 @@ const SettingsPage = ({ route }) => {
             padding: 15,
           }}
         >
-          <ViewOwn style={{ backgroundColor: 'transparent' }} column>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field }) => (
-                <TextInput
-                  mode="outlined"
-                  label="Database url"
-                  style={{ width: '100%' }}
-                  {...field}
-                />
-              )}
-              name="db_url"
-            />
+          <Form
+            control={control}
+            onSubmit={onSubmit}
+            render={({ submit }) => {
+              return (
+                <>
+                  <ViewOwn style={{ backgroundColor: 'transparent' }} column>
+                    <Controller
+                      control={control}
+                      rules={{
+                        required: true,
+                      }}
+                      render={({ field: { onChange, ...rest } }) => (
+                        <TextInput
+                          mode="outlined"
+                          label="Database url"
+                          style={{ width: '100%' }}
+                          onChangeText={onChange}
+                          {...rest}
+                        />
+                      )}
+                      name="db_url"
+                    />
 
-            <HelperText type="error" visible={true} style={{ width: '100%' }}>
-              {hasErrors}
-            </HelperText>
-          </ViewOwn>
-          <ViewOwn style={{ justifyContent: 'flex-end', backgroundColor: 'transparent' }}>
-            <Button
-              mode="contained-tonal"
-              icon="content-save-check-outline"
-              onPress={saveParams}
-              disabled={loading || !isDirty || !isValid}
-              loading={loading}
-            >
-              Save
-            </Button>
-          </ViewOwn>
+                    <HelperText type="error" visible={true} style={{ width: '100%' }}>
+                      {errors.db_url?.message}
+                    </HelperText>
+                  </ViewOwn>
+                  <ViewOwn style={{ justifyContent: 'flex-end', backgroundColor: 'transparent' }}>
+                    <Button
+                      mode="contained-tonal"
+                      icon="content-save-check-outline"
+                      onPress={submit}
+                      disabled={loading || !isDirty || !isValid}
+                      loading={loading}
+                    >
+                      Save
+                    </Button>
+                  </ViewOwn>
+                </>
+              );
+            }}
+          ></Form>
         </ViewOwn>
       </ViewOwn>
       <StatusBar style="auto" />

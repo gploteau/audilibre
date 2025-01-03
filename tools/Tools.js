@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import { useCallback } from 'react';
 
 export const storeData = async (key, value) => {
   try {
@@ -26,3 +27,34 @@ export const durationWithPadding = (ms) => {
     moment.utc(duration.as('ms')).format(':mm:ss')
   );
 };
+
+export const useYupValidationResolver = (validationSchema) =>
+  useCallback(
+    async (data) => {
+      try {
+        const values = await validationSchema.validate(data, {
+          abortEarly: false,
+        });
+
+        return {
+          values,
+          errors: {},
+        };
+      } catch (errors) {
+        return {
+          values: {},
+          errors: errors.inner.reduce(
+            (allErrors, currentError) => ({
+              ...allErrors,
+              [currentError.path]: {
+                type: currentError.type ?? 'validation',
+                message: currentError.message,
+              },
+            }),
+            {}
+          ),
+        };
+      }
+    },
+    [validationSchema]
+  );
