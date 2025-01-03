@@ -1,4 +1,4 @@
-const { withDangerousMod, getResourceFolderAsync } = require('@expo/config-plugins');
+const { withDangerousMod } = require('@expo/config-plugins');
 const { Paths } = require('@expo/config-plugins/build/android');
 const path = require('path');
 const fs = require('fs');

@@ -10,9 +10,12 @@ const SearchFooterContentListLayoutPlayerPage = (props) => {
       <TextInput
         placeholder="Search"
         value={filterText}
-        mode="outlined"
+        mode="flat"
         onChangeText={(text) => setFilterText(text)}
         right={<TextInput.Icon icon="close-circle-outline" onPress={() => setFilterText('')} />}
+        underlineStyle={{
+          display: 'none',
+        }}
         contentStyle={{
           fontFamily: 'Montserrat_500Medium',
           width: '100%',
@@ -20,8 +23,6 @@ const SearchFooterContentListLayoutPlayerPage = (props) => {
           outline: 'none',
           fontSize: 40,
           fontWeight: '200',
-          border: 'none',
-          borderBottom: '1px solid rgba(51,51,51,.7)',
         }}
       />
     </ViewOwn>

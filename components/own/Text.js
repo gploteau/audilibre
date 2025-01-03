@@ -17,6 +17,7 @@ const TextOwn = ({ children, ellipsis, style, ...rest }) => {
 const styles = () =>
   StyleSheet.create({
     ellipsis: {
+      maxWidth: '100%',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',

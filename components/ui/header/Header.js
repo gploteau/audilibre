@@ -76,7 +76,7 @@ const HeaderLayoutPlayerPage = (props) => {
           />
         </ViewOwn>
       </ViewOwn>
-      <ViewOwn column style={{ width: 'min-content' }}>
+      <ViewOwn column style={{ width: '100%' }}>
         <Tooltip title={_.get(currentTrack, 'title')} leaveTouchDelay={500} enterTouchDelay={100}>
           <TextOwn variant="titleLarge" ellipsis>
             {_.get(currentTrack, 'title')}
