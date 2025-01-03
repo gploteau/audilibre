@@ -163,7 +163,7 @@ const SettingsPage = ({ route }) => {
             <TextInput
               mode="outlined"
               label="Database url"
-              value={url ?? currentUrl ?? ''}
+              value={url ? url : currentUrl ? currentUrl : ''}
               onChangeText={(text) => setUrl(text)}
               style={{ width: '100%' }}
             />
