@@ -23,6 +23,14 @@ const CacheProvider = ({ children }) => {
     [getData, storeData, setCache]
   );
 
+  const hardGetCache = useCallback(
+    async (key, defaultValue) => {
+      const hardCache = await getData('audilibre');
+      return _.get(hardCache, key, defaultValue);
+    },
+    [getData]
+  );
+
   const updateCache = useCallback(
     (key, value) => {
       const newCache = { ...cache, [key]: value };
@@ -49,6 +57,7 @@ const CacheProvider = ({ children }) => {
     getCache,
     updateCache,
     hardUpdateCache,
+    hardGetCache,
   };
 
   if (cache === null) return null;

@@ -5,11 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlayerBehaviourContext } from '@/contexts/behaviour';
 import { useCacheContext } from '@/contexts/cache';
 import { useRootContext } from '@/contexts/root';
-import { storeData } from '@/tools/Tools';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Button, HelperText, Icon, RadioButton, TextInput, useTheme } from 'react-native-paper';
 
 const SettingsPage = ({ route }) => {
@@ -22,11 +21,24 @@ const SettingsPage = ({ route }) => {
   const [url, setUrl] = useState(db_url || '');
   const [loading, setLoading] = useState(false);
 
-  const { getCache, cache, hardUpdateCache } = useCacheContext();
+  const { getCache, cache, hardUpdateCache, hardGetCache } = useCacheContext();
 
   const { changeColorScheme } = useRootContext();
 
   const theme = useTheme();
+
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { errors, isDirty, isValid },
+  } = useForm({
+    defaultValues: async () => {
+      return {
+        db_url: await hardGetCache('db_url', ''),
+      };
+    },
+  });
 
   useEffect(() => {
     if (from !== 'others') {
@@ -39,11 +51,12 @@ const SettingsPage = ({ route }) => {
   }, [navigation, from]);
 
   const saveParams = useCallback(async () => {
-    if (url) {
+    const { db_url } = getValues();
+    if (db_url) {
       try {
         setHasErrors('');
         setLoading(true);
-        const dist = url.startsWith('http') ? url : `https://${url}`;
+        const dist = db_url.startsWith('http') ? db_url : `https://${db_url}`;
         const res = await fetch(dist);
         const data = await res.json();
         if (_.isArray(data)) {
@@ -77,18 +90,10 @@ const SettingsPage = ({ route }) => {
         setLoading(false);
       }
     }
-  }, [url, storeData]);
-
-  useEffect(() => {
-    setHasErrors('');
-  }, [url]);
+  }, [getValues, hardUpdateCache]);
 
   const currentThemeLight = useMemo(() => {
     return getCache('theme');
-  }, [cache]);
-
-  const currentUrl = useMemo(() => {
-    return getCache('db_url', '');
   }, [cache]);
 
   const handleChangeThemeLight = useCallback(
@@ -160,13 +165,22 @@ const SettingsPage = ({ route }) => {
           }}
         >
           <ViewOwn style={{ backgroundColor: 'transparent' }} column>
-            <TextInput
-              mode="outlined"
-              label="Database url"
-              value={url ? url : currentUrl ? currentUrl : ''}
-              onChangeText={(text) => setUrl(text)}
-              style={{ width: '100%' }}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field }) => (
+                <TextInput
+                  mode="outlined"
+                  label="Database url"
+                  style={{ width: '100%' }}
+                  {...field}
+                />
+              )}
+              name="db_url"
             />
+
             <HelperText type="error" visible={true} style={{ width: '100%' }}>
               {hasErrors}
             </HelperText>
@@ -176,7 +190,7 @@ const SettingsPage = ({ route }) => {
               mode="contained-tonal"
               icon="content-save-check-outline"
               onPress={saveParams}
-              disabled={loading}
+              disabled={loading || !isDirty || !isValid}
               loading={loading}
             >
               Save
