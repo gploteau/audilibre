@@ -41,7 +41,8 @@ export default function RootLayout() {
   useEffect(() => {
     const getScheme = async () => {
       const data = await getData('audilibre');
-      setCurrentColorScheme(_.get(data, 'theme', 'auto'));
+      const userScheme = _.get(data, 'theme', 'auto');
+      setCurrentColorScheme(userScheme === 'auto' ? colorScheme : userScheme);
     };
     getScheme();
   }, []);
@@ -116,9 +117,9 @@ export default function RootLayout() {
 
   const changeColorScheme = useCallback(
     async (scheme) => {
-      setCurrentColorScheme(scheme || 'auto');
+      setCurrentColorScheme(scheme === 'auto' ? colorScheme : scheme);
     },
-    [setCurrentColorScheme]
+    [setCurrentColorScheme, colorScheme]
   );
 
   if (!appIsReady) {
@@ -130,7 +131,7 @@ export default function RootLayout() {
       <CacheProvider>
         <SafeAreaProvider>
           <GestureHandlerRootView>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <ThemeProvider value={currentColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
               <PaperProvider theme={theme}>
                 <PlayerBehaviourProvider>
                   <Stack
