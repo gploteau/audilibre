@@ -8,19 +8,18 @@ import { useRootContext } from '@/contexts/root';
 import { useYupValidationResolver } from '@/tools/Tools';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, Form, useForm } from 'react-hook-form';
 import { Button, HelperText, Icon, RadioButton, TextInput, useTheme } from 'react-native-paper';
 import * as yup from 'yup';
 
 const SettingsPage = ({ route }) => {
-  const { from, db_url } = useLocalSearchParams();
+  const { from, db_url: db_url_param } = useLocalSearchParams();
   const navigation = useNavigation();
   const { currentTrack } = usePlayerBehaviourContext();
   const insets = useSafeAreaInsets();
 
-  const [hasErrors, setHasErrors] = useState('');
-  const [url, setUrl] = useState(db_url || '');
   const [loading, setLoading] = useState(false);
 
   const { getCache, cache, hardUpdateCache, hardGetCache } = useCacheContext();
@@ -38,17 +37,22 @@ const SettingsPage = ({ route }) => {
   const {
     control,
     setError,
-    formState: { errors, isDirty, isValid, dirtyFields, validatingFields },
+    setValue,
+    formState: { errors, isDirty, isValid },
   } = useForm({
     resolver,
-    defaultValues: async () => {
-      return {
-        db_url: await hardGetCache('db_url', ''),
-      };
-    },
+    defaultValues: db_url_param
+      ? {}
+      : async () => {
+          return {
+            db_url: await hardGetCache('db_url', ''),
+          };
+        },
   });
 
-  console.log(dirtyFields, errors, isValid, isDirty);
+  useEffect(() => {
+    db_url_param && setValue('db_url', db_url_param, { shouldDirty: true, shouldValidate: true });
+  }, [db_url_param]);
 
   useEffect(() => {
     if (from !== 'others') {
@@ -65,7 +69,6 @@ const SettingsPage = ({ route }) => {
       const { db_url } = data;
       if (db_url) {
         try {
-          setHasErrors('');
           setLoading(true);
           const dist = db_url.startsWith('http') ? db_url : `https://${db_url}`;
           const res = await fetch(dist);
