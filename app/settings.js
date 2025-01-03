@@ -38,21 +38,19 @@ const SettingsPage = ({ route }) => {
     control,
     setError,
     setValue,
-    formState: { errors, isDirty, isValid },
+    formState: { errors, isDirty, isValid, defaultValues },
   } = useForm({
     resolver,
-    defaultValues: db_url_param
-      ? {}
-      : async () => {
-          return {
-            db_url: await hardGetCache('db_url', ''),
-          };
-        },
+    defaultValues: async () => {
+      return {
+        db_url: await hardGetCache('db_url', ''),
+      };
+    },
   });
 
   useEffect(() => {
     db_url_param && setValue('db_url', db_url_param, { shouldDirty: true, shouldValidate: true });
-  }, [db_url_param]);
+  }, [db_url_param, defaultValues]);
 
   useEffect(() => {
     if (from !== 'others') {
