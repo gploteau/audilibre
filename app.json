@@ -36,7 +36,9 @@
     "plugins": [
       "expo-router",
       "expo-audio",
-      "./plugins/withGradleProperties"
+      "./plugins/withGradleProperties",
+      "./plugins/withRes",
+      "./plugins/withMain"
     ],
     "splash": {
       "image": "./assets/images/splash-icon.png",

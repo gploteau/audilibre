@@ -7,11 +7,6 @@ function withCustomGradleProperties(config) {
     const additionalGraddleProperties = [
       // SDK 52: https://github.com/expo/expo/issues/30725
       { type: 'property', key: 'android.enableJetifier', value: 'true' },
-      /*       {
-        type: 'property',
-        key: 'android.enablePngCrunchInReleaseBuilds',
-        value: 'true',
-      }, */
     ];
 
     additionalGraddleProperties.map(function (gradleProperty) {

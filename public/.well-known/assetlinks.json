@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.gploteau.audilibre",
+    "sha256_cert_fingerprints": ["55:12:8B:A1:D8:53:CC:B5:5C:58:69:97:21:CA:B8:4C:8E:62:F6:EF:92:C1:CD:2E:0D:34:EA:8C:17:AE:79:2B"]
+  }
+}]
