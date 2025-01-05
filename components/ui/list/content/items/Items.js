@@ -42,7 +42,7 @@ const ItemsContentListLayoutPlayerPage = (props) => {
           overflowY: 'auto',
           padding: 0,
           margin: 0,
-          maxHeight: height - 178 + top,
+          maxHeight: height - 175,
           overflowX: 'hidden',
         }}
         contentContainerStyle={{
@@ -79,7 +79,7 @@ const ItemsContentListLayoutPlayerPage = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    flex: 1,
     overflow: 'hidden',
     overflowY: 'auto',
     position: 'relative',

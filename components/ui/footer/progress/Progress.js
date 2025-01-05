@@ -23,7 +23,7 @@ const ProgressFooterLayoutPlayerPage = () => {
   } = usePlayerBehaviourContext();
   const [thumbPressed, setThumbPressed] = useState(false);
 
-  const progress = useSharedValue(0);
+  const progress = useSharedValue(trackProgress);
   const cache = useSharedValue(0);
   const min = useSharedValue(0);
   const max = useSharedValue(numeral(_.get(currentTrack, 'duration', 0)).multiply(1000).value());

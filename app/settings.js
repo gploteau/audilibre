@@ -2,11 +2,13 @@ import ViewOwn from '@/components/own/View';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { usePlayerBehaviourContext } from '@/contexts/behaviour';
+import MultiOwn from '@/components/own/Multi';
+import TextOwn from '@/components/own/Text';
 import { useCacheContext } from '@/contexts/cache';
 import { useRootContext } from '@/contexts/root';
 import { useYupValidationResolver } from '@/tools/Tools';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import Constants from 'expo-constants';
+import { Link, useLocalSearchParams, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -17,14 +19,13 @@ import * as yup from 'yup';
 const SettingsPage = ({ route }) => {
   const { from, db_url: db_url_param } = useLocalSearchParams();
   const navigation = useNavigation();
-  const { currentTrack } = usePlayerBehaviourContext();
   const insets = useSafeAreaInsets();
 
   const [loading, setLoading] = useState(false);
 
   const { getCache, cache, hardUpdateCache, hardGetCache } = useCacheContext();
 
-  const { changeColorScheme } = useRootContext();
+  const { changeColorScheme, currentColorScheme } = useRootContext();
 
   const theme = useTheme();
 
@@ -47,6 +48,8 @@ const SettingsPage = ({ route }) => {
       };
     },
   });
+
+  const version = useMemo(() => Constants.expoConfig.version);
 
   useEffect(() => {
     db_url_param && setValue('db_url', db_url_param, { shouldDirty: true, shouldValidate: true });
@@ -129,53 +132,78 @@ const SettingsPage = ({ route }) => {
         },
       ]}
     >
+      <TextOwn variant="bold" style={{ paddingLeft: 10, marginBottom: 15, marginTop: 15 }}>
+        Theme
+      </TextOwn>
       <ViewOwn fullHeight column>
         <ViewOwn
           column
           surface
-          elevation={1}
           style={{
-            padding: 15,
             marginBottom: 15,
+            borderRadius: theme.roundness,
           }}
         >
           <RadioButton.Group
             onValueChange={handleChangeThemeLight}
             value={currentThemeLight || 'auto'}
           >
-            <View style={{ position: 'relative' }}>
-              <View style={{ position: 'absolute', top: 12, left: 10 }}>
+            <View
+              style={{
+                position: 'relative',
+                borderBottomWidth: 1,
+                borderBottomColor: theme?.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                paddingVertical: 5,
+              }}
+            >
+              <View style={{ position: 'absolute', top: 18, left: 15 }}>
                 <Icon size={26} source="contrast-circle" />
               </View>
-              <RadioButton.Item value="auto" label="Automatic" labelStyle={{ paddingLeft: 30 }} />
+              <RadioButton.Item value="auto" label="Automatic" labelStyle={{ paddingLeft: 35 }} />
             </View>
-            <View style={{ position: 'relative' }}>
-              <View style={{ position: 'absolute', top: 12, left: 10 }}>
+            <View
+              style={{
+                position: 'relative',
+                borderBottomWidth: 1,
+                borderBottomColor: theme?.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                paddingVertical: 5,
+              }}
+            >
+              <View style={{ position: 'absolute', top: 18, left: 15 }}>
                 <Icon
                   size={26}
                   source="weather-sunny"
                   style={{ position: 'absolute', top: 12, left: 10 }}
                 />
               </View>
-              <RadioButton.Item value="light" label="Light" labelStyle={{ paddingLeft: 30 }} />
+              <RadioButton.Item value="light" label="Light" labelStyle={{ paddingLeft: 35 }} />
             </View>
-            <View style={{ position: 'relative' }}>
-              <View style={{ position: 'absolute', top: 12, left: 10 }}>
+            <View
+              style={{
+                position: 'relative',
+                paddingVertical: 5,
+              }}
+            >
+              <View style={{ position: 'absolute', top: 18, left: 15 }}>
                 <Icon
                   size={26}
                   source="moon-waning-crescent"
                   style={{ position: 'absolute', top: 12, left: 10 }}
                 />
               </View>
-              <RadioButton.Item value="dark" label="Dark" labelStyle={{ paddingLeft: 30 }} />
+              <RadioButton.Item value="dark" label="Dark" labelStyle={{ paddingLeft: 35 }} />
             </View>
           </RadioButton.Group>
         </ViewOwn>
+        <TextOwn variant="bold" style={{ paddingLeft: 10, marginBottom: 15, marginTop: 15 }}>
+          Playlist
+        </TextOwn>
         <ViewOwn
           column
           surface
           style={{
             padding: 15,
+            marginBottom: 15,
           }}
         >
           <Form
@@ -222,8 +250,28 @@ const SettingsPage = ({ route }) => {
             }}
           ></Form>
         </ViewOwn>
+        <TextOwn variant="bold" style={{ paddingLeft: 10, marginTop: 15 }}>
+          App Info
+        </TextOwn>
+        <MultiOwn>
+          <MultiOwn.Row key={0}>
+            <MultiOwn.Cell>Client version</MultiOwn.Cell>
+            <MultiOwn.Cell right>{version}</MultiOwn.Cell>
+          </MultiOwn.Row>
+          <MultiOwn.Row key={1}>
+            <MultiOwn.Cell>Privacy Policy</MultiOwn.Cell>
+            <MultiOwn.Cell right>
+              <Link href="/privacy-policy">
+                <ViewOwn vcenter style={{ gap: 10 }}>
+                  <Icon source="link" size={25} />
+                  <TextOwn>Read</TextOwn>
+                </ViewOwn>
+              </Link>
+            </MultiOwn.Cell>
+          </MultiOwn.Row>
+        </MultiOwn>
       </ViewOwn>
-      <StatusBar style="auto" />
+      <StatusBar style={currentColorScheme === 'dark' ? 'light' : 'dark'} />
     </View>
   );
 };

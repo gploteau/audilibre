@@ -191,6 +191,11 @@ const PlayerBehaviourProvider = ({ children }) => {
   }, [getCache]);
 
   useEffect(() => {
+    const unallowedRoutes = ['privacy-policy'];
+    const currentRoute = navigation.getState().routes.at(-1)?.name;
+    if (unallowedRoutes.includes(currentRoute)) {
+      return;
+    }
     loadTracks();
   }, [_.get(cache, 'db_url')]);
 

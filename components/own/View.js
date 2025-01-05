@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Surface } from 'react-native-paper';
 
 const ViewOwn = ({
@@ -19,6 +18,7 @@ const ViewOwn = ({
   darkColor,
   fullHeight,
   surface,
+  scroll,
   ...rest
 }) => {
   const margin = {
@@ -34,16 +34,22 @@ const ViewOwn = ({
     (center && 'center') ||
     'flex-start';
 
-  const Component = surface ? Surface : View;
+  const Component = surface ? Surface : scroll ? ScrollView : View;
+
+  const computedStyles = [
+    styles({ column, justifyContent, vcenter }).container,
+    margin,
+    fullHeight && { flex: 1 },
+    style,
+  ];
 
   return (
     <Component
-      style={[
-        styles({ column, justifyContent, vcenter }).container,
-        margin,
-        fullHeight && { flex: 1 },
-        style,
-      ]}
+      {...(scroll
+        ? {
+            contentContainerStyle: computedStyles,
+          }
+        : { style: computedStyles })}
       {...rest}
     >
       {children}
@@ -61,11 +67,5 @@ const styles = ({ column, justifyContent, vcenter }) =>
       alignItems: vcenter ? 'center' : 'stretch',
     },
   });
-
-ViewOwn.propTypes = {
-  children: PropTypes.node,
-  column: PropTypes.bool,
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-};
 
 export default ViewOwn;

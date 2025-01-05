@@ -30,13 +30,13 @@ const HeaderLayoutPlayerPage = (props) => {
           'uuid'
         )}?db_url=${encodeURIComponent(getCache('db_url'))}`,
       });
-      if (result.action === Share.sharedAction) {
+      if (result?.action === Share.sharedAction) {
         if (result.activityType) {
           // shared with activity type of result.activityType
         } else {
           // shared
         }
-      } else if (result.action === Share.dismissedAction) {
+      } else if (result?.action === Share.dismissedAction) {
         // dismissed
       }
     } catch (e) {

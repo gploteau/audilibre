@@ -12,7 +12,7 @@ const FooterContentListLayoutPlayerPage = (props) => {
   const { setLeftDrawerOpen } = usePlayerBehaviourContext();
 
   return (
-    <ViewOwn style={styles.container} column>
+    <ViewOwn style={[styles.container, { backgroundColor: theme.colors.background }]} column>
       <SearchFooterContentListLayoutPlayerPage />
       <ViewOwn style={styles.view}>
         <Pressable onPress={() => setLeftDrawerOpen(false)} accessibilityRole="button">

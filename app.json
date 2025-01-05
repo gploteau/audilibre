@@ -22,9 +22,10 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.WAKE_LOCK"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
       ],
       "package": "com.gploteau.audilibre"
     },
@@ -35,7 +36,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-audio",
+      "./plugins/withTranslucentSplashScreen",
       "./plugins/withGradleProperties",
       "./plugins/withRes",
       "./plugins/withMain"
