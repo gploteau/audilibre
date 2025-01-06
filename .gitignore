@@ -37,6 +37,5 @@ yarn-error.*
 
 app-example
 .env.*
-eas.json
 android
 public/.well-known/assetlinks.json

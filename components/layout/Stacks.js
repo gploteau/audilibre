@@ -3,26 +3,11 @@ import { useRootContext } from '@/contexts/root';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { Platform } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
 
 export default function RootStacks() {
   const { theme, currentColorScheme, defaultTheme } = useRootContext();
-
-  let deferredPrompt;
-
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      deferredPrompt = e;
-      console.log(deferredPrompt);
-    });
-  }, []);
 
   return (
     <ThemeProvider value={currentColorScheme === 'dark' ? DarkTheme : DefaultTheme}>

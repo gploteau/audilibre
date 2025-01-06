@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import MultiOwn from '@/components/own/Multi';
+import SmartBanner from '@/components/own/SmartBanner';
 import TextOwn from '@/components/own/Text';
 import { useCacheContext } from '@/contexts/cache';
 import { useRootContext } from '@/contexts/root';
@@ -132,6 +133,7 @@ const SettingsPage = ({ route }) => {
         },
       ]}
     >
+      {Platform.OS === 'web' && <SmartBanner />}
       <TextOwn variant="bold" style={{ paddingLeft: 10, marginBottom: 15, marginTop: 15 }}>
         Theme
       </TextOwn>
