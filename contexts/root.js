@@ -12,6 +12,7 @@ const RootContext = createContext(null);
 const RootProvider = ({ children }) => {
   const colorScheme = useColorScheme();
   const [currentColorScheme, setCurrentColorScheme] = useState('auto');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     const getScheme = async () => {
@@ -80,6 +81,8 @@ const RootProvider = ({ children }) => {
     currentColorScheme,
     theme,
     changeColorScheme,
+    setDeferredPrompt,
+    deferredPrompt,
   };
 
   return <RootContext.Provider value={value}>{children}</RootContext.Provider>;

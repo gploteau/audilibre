@@ -1,6 +1,7 @@
 import { useCacheContext } from '@/contexts/cache';
+import { useRootContext } from '@/contexts/root';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Button, IconButton, useTheme } from 'react-native-paper';
 import { Image } from 'react-native-web';
 import TextOwn from './Text';
@@ -9,19 +10,8 @@ import ViewOwn from './View';
 const SmartBanner = () => {
   const theme = useTheme();
   const { updateCache, hardGetCache } = useCacheContext();
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const { deferredPrompt } = useRootContext();
   const [canDisplayBanner, setCanDisplayBanner] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      setDeferredPrompt(e);
-      console.log(e);
-    });
-  }, []);
 
   useEffect(() => {
     if (deferredPrompt) {
@@ -48,7 +38,6 @@ const SmartBanner = () => {
       } else {
         console.log('User dismissed the A2HS prompt');
       }
-      deferredPrompt = null;
     });
   }, [deferredPrompt]);
 
