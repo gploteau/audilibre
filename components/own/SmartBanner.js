@@ -27,6 +27,7 @@ const SmartBanner = () => {
     if (deferredPrompt) {
       const canDisplay = async () => {
         const hide = await hardGetCache('hideSmartBanner', false);
+        console.log('hide', hide);
         setCanDisplayBanner(!hide);
       };
       canDisplay();

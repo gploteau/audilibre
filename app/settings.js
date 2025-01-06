@@ -133,7 +133,7 @@ const SettingsPage = ({ route }) => {
         },
       ]}
     >
-      {Platform.OS === 'web' && <SmartBanner />}
+      <SmartBanner />
       <TextOwn variant="bold" style={{ paddingLeft: 10, marginBottom: 15, marginTop: 15 }}>
         Theme
       </TextOwn>
