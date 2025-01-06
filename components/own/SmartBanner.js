@@ -1,5 +1,6 @@
 import { useCacheContext } from '@/contexts/cache';
-import { useRootContext } from '@/contexts/root';
+import * as Linking from 'expo-linking';
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, IconButton, useTheme } from 'react-native-paper';
@@ -10,19 +11,16 @@ import ViewOwn from './View';
 const SmartBanner = () => {
   const theme = useTheme();
   const { updateCache, hardGetCache } = useCacheContext();
-  const { deferredPrompt } = useRootContext();
   const [canDisplayBanner, setCanDisplayBanner] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    if (deferredPrompt) {
-      const canDisplay = async () => {
-        const hide = await hardGetCache('hideSmartBanner', false);
-        console.log('hide', hide);
-        setCanDisplayBanner(!hide);
-      };
-      canDisplay();
-    }
-  }, [deferredPrompt]);
+    const canDisplay = async () => {
+      const hide = await hardGetCache('hideSmartBanner', false);
+      setCanDisplayBanner(!hide);
+    };
+    canDisplay();
+  }, []);
 
   const handleCloseBanner = useCallback(() => {
     updateCache('hideSmartBanner', true);
@@ -30,16 +28,11 @@ const SmartBanner = () => {
   }, [updateCache, setCanDisplayBanner]);
 
   const handleInstall = useCallback(() => {
-    deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the A2HS prompt');
-      } else {
-        console.log('User dismissed the A2HS prompt');
-      }
+    const url = Linking.createURL(process.env.EXPO_PUBLIC_PLAY_STORE_URL, {
+      queryParams: { id: 'com.gploteau.audilibre' },
     });
-  }, [deferredPrompt]);
+    Linking.openURL(url);
+  }, []);
 
   if (!canDisplayBanner) return null;
 
