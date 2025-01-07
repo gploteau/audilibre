@@ -2,7 +2,7 @@ import { useCacheContext } from '@/contexts/cache';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { Button, IconButton, useTheme } from 'react-native-paper';
 import { Image } from 'react-native-web';
 import TextOwn from './Text';
@@ -16,6 +16,7 @@ const SmartBanner = () => {
 
   useEffect(() => {
     const canDisplay = async () => {
+      if (Platform.OS !== 'web') return;
       const hide = await hardGetCache('hideSmartBanner', false);
       setCanDisplayBanner(!hide);
     };
@@ -39,9 +40,12 @@ const SmartBanner = () => {
   return (
     <ViewOwn style={styles(theme).container} between>
       <ViewOwn vcenter>
-        <IconButton icon="close" onPress={handleCloseBanner} />
-        <Image source={require('../../assets/images/favicon.png')} />
-        <ViewOwn column ml={15}>
+        <IconButton icon="close" onPress={handleCloseBanner} style={{ margin: 0 }} />
+        <Image
+          style={{ transform: 'scale(0.75)' }}
+          source={require('../../assets/images/favicon.png')}
+        />
+        <ViewOwn column ml={5}>
           <TextOwn variant="bold">Audilibre</TextOwn>
           <TextOwn>Free - On the Play Store</TextOwn>
         </ViewOwn>
@@ -58,6 +62,7 @@ const SmartBanner = () => {
 const styles = (theme) =>
   StyleSheet.create({
     container: {
+      overflow: 'hidden',
       marginTop: 5,
       marginBottom: 15,
       padding: 15,
