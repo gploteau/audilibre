@@ -22,7 +22,9 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.WAKE_LOCK"
+        "android.permission.WAKE_LOCK",
+        "android.permission.FOREGROUND_SERVICE",
+        // "android.permission.POST_NOTIFICATIONS"
       ],
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
@@ -37,16 +39,28 @@
     "plugins": [
       "expo-router",
       "./plugins/withGradleProperties",
-      ["expo-splash-screen",
-      {
-        "backgroundColor": "#FFFFFF",
-        "image": "./assets/images/splash-icon.png",
-        "dark": {
-          "image": "./assets/images/splash-icon-dark.png",
-          "backgroundColor": "#000000"
-        },
-        "imageWidth": 200
-      }]
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFFFF",
+          "image": "./assets/images/splash-icon.png",
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#000000"
+          },
+          "imageWidth": 200
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/favicon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
+      "expo-audio"
     ],
     "splash": {
       "image": "./assets/images/splash-icon.png",

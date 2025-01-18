@@ -16,7 +16,7 @@ const CoverLayoutPlayerPage = (props) => {
       )}
       <Image
         style={styles.cover}
-        source={_.get(currentTrack, 'cover', null)}
+        source={_.get(currentTrack, 'artwork', null)}
         contentFit="cover"
         transition={1000}
       />

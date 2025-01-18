@@ -84,7 +84,7 @@ const HeaderLayoutPlayerPage = (props) => {
         </Tooltip>
       </ViewOwn>
       <ViewOwn>
-        <TextOwn variant="bodySmall">{_.get(currentTrack, 'author')}</TextOwn>
+        <TextOwn variant="bodySmall">{_.get(currentTrack, 'artist')}</TextOwn>
       </ViewOwn>
     </ViewOwn>
   );

@@ -1,6 +1,6 @@
 import { useCacheContext } from '@/contexts/cache';
+// import ExpoControlNotification from '@/modules/expo-control-notification';
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
-import * as Notifications from 'expo-notifications';
 import { useGlobalSearchParams, useNavigation, useRouter } from 'expo-router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -13,15 +13,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import { validate as isValidUUID } from 'uuid';
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
 
 const PlayerContext = createContext(null);
 
@@ -38,6 +31,8 @@ const PlayerBehaviourProvider = ({ children }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const [initialized, setInitialized] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -67,6 +62,7 @@ const PlayerBehaviourProvider = ({ children }) => {
 
     const updatePosition = async () => {
       const lastPositions = await getCache('positions', {});
+
       await hardUpdateCache('positions', {
         ...lastPositions,
         [_.get(currentTrack, 'id')]: positionMillis,
@@ -83,6 +79,8 @@ const PlayerBehaviourProvider = ({ children }) => {
       changeTrackByWay(1);
     }
   };
+
+  const isWeb = useMemo(() => Platform.OS === 'web', [Platform]);
 
   const loadCurrentTrack = useCallback(async () => {
     const shouldPlay = !!sound && isPlaying;
@@ -109,13 +107,19 @@ const PlayerBehaviourProvider = ({ children }) => {
     updateCache('lastId', _.get(currentTrack, 'id'));
 
     const { sound: newSound } = await Audio.Sound.createAsync(
-      { uri: _.get(currentTrack, 'file') },
+      { uri: _.get(currentTrack, 'url') },
       initialStatus
     );
 
     navigation.navigate('[uuid]', { uuid: _.get(currentTrack, 'uuid') });
 
     setSound(newSound);
+
+    /*     await ExpoControlNotification.showAudioNotification(
+      _.get(currentTrack, 'title'),
+      _.get(currentTrack, 'url'),
+      _.get(currentTrack, 'artwork')
+    ); */
 
     newSound.setOnPlaybackStatusUpdate(_setOnPlaybackStatusUpdate);
 
@@ -184,7 +188,20 @@ const PlayerBehaviourProvider = ({ children }) => {
       }
       const res = await fetch(url);
       const data = await res.json();
-      setTracks(data);
+
+      const tracks = _.map(data, (track) => {
+        return {
+          id: _.get(track, 'id'),
+          uuid: _.get(track, 'uuid'),
+          url: _.get(track, 'file'),
+          title: _.get(track, 'title'),
+          artist: _.get(track, 'author'),
+          artwork: _.get(track, 'cover'),
+          duration: _.get(track, 'duration'),
+        };
+      });
+
+      setTracks(tracks);
     } catch (e) {
       console.error(e);
     }

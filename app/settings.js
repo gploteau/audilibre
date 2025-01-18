@@ -137,7 +137,7 @@ const SettingsPage = ({ route }) => {
       <TextOwn variant="bold" style={{ paddingLeft: 10, marginBottom: 15, marginTop: 15 }}>
         Theme
       </TextOwn>
-      <ViewOwn fullHeight column>
+      <ViewOwn column>
         <ViewOwn
           column
           surface
@@ -155,20 +155,22 @@ const SettingsPage = ({ route }) => {
                 position: 'relative',
                 borderBottomWidth: 1,
                 borderBottomColor: theme?.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                paddingVertical: 5,
               }}
             >
               <View style={{ position: 'absolute', top: 18, left: 15 }}>
                 <Icon size={26} source="contrast-circle" />
               </View>
-              <RadioButton.Item value="auto" label="Automatic" labelStyle={{ paddingLeft: 35 }} />
+              <RadioButton.Item
+                value="auto"
+                label="Automatic"
+                labelStyle={{ paddingLeft: 35, paddingVertical: 10 }}
+              />
             </View>
             <View
               style={{
                 position: 'relative',
                 borderBottomWidth: 1,
                 borderBottomColor: theme?.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                paddingVertical: 5,
               }}
             >
               <View style={{ position: 'absolute', top: 18, left: 15 }}>
@@ -178,12 +180,15 @@ const SettingsPage = ({ route }) => {
                   style={{ position: 'absolute', top: 12, left: 10 }}
                 />
               </View>
-              <RadioButton.Item value="light" label="Light" labelStyle={{ paddingLeft: 35 }} />
+              <RadioButton.Item
+                value="light"
+                label="Light"
+                labelStyle={{ paddingLeft: 35, paddingVertical: 10 }}
+              />
             </View>
             <View
               style={{
                 position: 'relative',
-                paddingVertical: 5,
               }}
             >
               <View style={{ position: 'absolute', top: 18, left: 15 }}>
@@ -193,7 +198,11 @@ const SettingsPage = ({ route }) => {
                   style={{ position: 'absolute', top: 12, left: 10 }}
                 />
               </View>
-              <RadioButton.Item value="dark" label="Dark" labelStyle={{ paddingLeft: 35 }} />
+              <RadioButton.Item
+                value="dark"
+                label="Dark"
+                labelStyle={{ paddingLeft: 35, paddingVertical: 10 }}
+              />
             </View>
           </RadioButton.Group>
         </ViewOwn>
